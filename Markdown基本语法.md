@@ -117,4 +117,4 @@ Markdown是不只是latex的，但是可以在[CodeCogs Equation Editor](http://
 ```  
 效果：
 ![](http://latex.codecogs.com/gif.latex?f=ma)
-**注：**注意字符为2个\ 。
+**注：**转义字符为2个\ 。
