@@ -116,4 +116,4 @@ Markdown是不只是latex的，但是可以在[CodeCogs Equation Editor](http://
 ![](http://latex.codecogs.com/gif.latex?\\frac{1}{1+sin(x)})
 ```  
 效果：
-![](http://latex.codecogs.com/gif.latex?\\(f=ma))
+![](http://latex.codecogs.com/gif.latex?\\f=ma)
