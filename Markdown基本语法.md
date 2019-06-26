@@ -109,3 +109,11 @@
 - 北京
 + 上海
 * 广州
+
+## 八、数学公式
+Markdown是不只是latex的，但是可以在[CodeCogs Equation Editor](http://latex.codecogs.com/)生成然后引用。语法：
+```
+![](http://latex.codecogs.com/gif.latex?\\frac{1}{1+sin(x)})
+```  
+效果：
+![](http://latex.codecogs.com/gif.latex?\\frac{1}{1+sin(x)})
