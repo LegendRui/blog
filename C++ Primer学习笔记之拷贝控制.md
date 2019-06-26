@@ -1,5 +1,3 @@
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
-
 # C++ Primer学习笔记之拷贝控制
 时间：2019年6月26日
 
@@ -78,4 +76,4 @@ public:
 
 **注：** 当指向一个对象的引用或指针离开作用域时，析构函数不会执行。
 
-$F = \frac{1}{2}mv^2$
+![](http://latex.codecogs.com/gif.latex?\\frac{1}{1+sin(x)})
