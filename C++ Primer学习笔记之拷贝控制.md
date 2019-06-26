@@ -87,8 +87,8 @@ public:
 
 <br/><br/>
 ## 1.5 使用=default
-我们可以通过将拷贝控制成员定义为**=default**
-来显示地要求编译器生成合成的版本，此时合成的函数隐式地声明为**内联**的。如果内联不是我们希望的，则应只对成员的类外定义使用**=default**。
+我们可以通过将拷贝控制成员定义为**=default**来显示地要求编译器生成合成的版本，此时合成的函数隐式地声明为**内联**的。如果内联不是我们希望的，则应只对成员的类外定义使用**=default**。  
+
 ```
 class Sales_data{
 public:
@@ -104,3 +104,32 @@ Sales_data& operator(const Sales_data&) = default; // 非内联
 
 <br/><br/>
 ## 1.6 阻止拷贝
+对于某些类而言，拷贝构造函数和拷贝赋值运算符时没有合理意义的。如：iostream类阻止了拷贝，以避免对个对象写入或读取相同的IO缓冲。
+
+### 定义删除的函数
+在新标准下，可以通过将拷贝构造函数和拷贝赋值运算符定义为**删除的函数**来阻止拷贝。删除函数这样一种函数：我们虽然定义了它们，却不能以任何方式使用它们。在函数的参数列表后面加上=delete来指示我们希望将它定义为删除的：  
+```
+struct NoCopy{
+	NoCopy() = default;
+	NoCopy(const NoCopy&) = delete;		// 阻止拷贝
+	NoCopy& operator(const NoCopy&) = delete; 		// 阻止赋值
+	~NoCopy() = defalult;
+	...
+};
+```  
+与=default不同，=delete必须出现在函数第一次声明的时候。
+
+### 合成的拷贝控制成员可能是删除的
+对于某些类而言，如果其中的数据成员不能默认构造、拷贝、复制或销毁，则对应的成员函数将被定义为删除的。
+
+### private拷贝控制
+在新版本之前，类是通过将其拷贝构造函数和拷贝赋值运算符声明为private的来阻止拷贝：
+```
+class PrivateCopy{
+	PrivateCopy(const PrivateCopy&);
+	PrivateCopy& operator=(const PrivateCopy&);
+public:
+	PrivateCopy() = default;
+	~PrivateCopy();
+};
+```
