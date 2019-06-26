@@ -84,12 +84,28 @@
 
 ## 六、超链接
 语法：  
-`[超链接名](超链接地址 "超链接title")`
-实例：   
+`[超链接名](超链接地址 "超链接title")`  
+示例：   
 ```
 [GitHub](https://github.com/)
 [Google](http://google.com/)
 ```
 
-[GitHub](https://github.com/)
+[GitHub](https://github.com/)  
 [Google](http://google.com/)
+
+## 七、列表
+### + 无序列表
+语法：  
+无序列表用- + * 任何一个都可以
+
+示例：  
+```
+- 北京
++ 上海
+* 广州
+```   
+效果：   
+- 北京
++ 上海
+* 广州
