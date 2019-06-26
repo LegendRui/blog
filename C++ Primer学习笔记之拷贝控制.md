@@ -1,3 +1,5 @@
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
 # C++ Primer学习笔记之拷贝控制
 时间：2019年6月26日
 
