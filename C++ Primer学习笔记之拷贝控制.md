@@ -76,4 +76,4 @@ public:
 
 **注：** 当指向一个对象的引用或指针离开作用域时，析构函数不会执行。
 
-![](http://latex.codecogs.com/gif.latex?\\F=ma})
+![](http://latex.codecogs.com/gif.latex?\F=ma})
