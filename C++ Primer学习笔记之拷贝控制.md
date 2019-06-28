@@ -158,3 +158,65 @@ public:
         
 }
 ```
+
+<br/><br/>
+# 6.对象移动
+C++新标准添加了移动对象的能力。
+
+## 6.1 右值引用
+右值引用是为了支持移动操作而引入的。  
+我们不能将左值引用绑定到要求转换的表达式、字面常量或是返回右值的表达式，而右值引用可以绑定到这类表达式上，但不能绑定到左值引用：
+```
+int i = 42;
+int &r = i; 	// true
+int &&rr = i;	// false
+int &r2 = i + 2;	// false
+const int &r3 = i + 2;		// true
+init &&rr2 = i + 2;		// true
+```  
+二者的区别：左值有持久的状态，而右值要么是字面常量，要么是临时对象。
+```
+int &&rr1 = 42;			// true
+int &&rr2 = rr1;		// false,尽管rr1是一个右值引用，但也是变量！
+```  
+### move函数
+尽管不能直接将右值引用绑定到左值上，但可以显式地将一个左值转换为对应的右值引用类型。还可以通过**move**函数获得绑定到左值上的右值引用：  
+`int &&rr3 = std::move(rr1);	//ok`  
+
+## 6.2 移动构造函数和移动赋值运算符
+**移动构造函数**的第一个参数时该类类型的右值引用，且任何额外的参数都必须有默认实参。  
+
+除完成资源移动，移动构造函数还必须保证移后源对象处于这样一个状态——销毁它是无害的。
+```
+StrVec::StrVec(StrVec &&s) noexcept	// 移动构造函数不应抛出任何异常
+			： elements(s.elements), first_free(s.first_free), cap(s.cap)
+{
+	s.elements = s.first_free = s.cap = nullptr;	// 析构安全
+}
+```  
+
+### 移动赋值运算符
+移动赋值运算符执行与析构函数和移动构造函数相同的工作。和移动构造函数一样，如果移动赋值运算符不抛出任何异常，应标记为noexcept。
+```
+StrVec& StrVec::operator=(StrVec &&rhs) noexcept
+{
+	// 检测自赋值
+	if (this != rhs)
+	{
+		free();
+		elements = rhs.elements;
+		first_free = rhs.first_free;
+		cap = rhs.cap;
+		rhs.elements = rhs.first_free = rhs.cap = nullptr;		// 可析构
+	}
+	return *this;
+}
+```
+
+### 合成的移动操作
+只有当一个类没有定义任何自己版本的拷贝控制成员，且它的所有数据成员都能移动构造或移动赋值时，编译器才会为它合成移动构造函数或移动赋值运算符。  
+
+定义了一个移动构造函数或移动赋值运算符的类必须也定义自己的拷贝操作。否则，这些成员默认地被定义为删除的。
+
+### 移动迭代器
+移动迭代器的解引用运算符生成一个右值引用，因此在某些场合替代普通迭代器提升效率。移动迭代器可通过make_move_iterator()获得。
