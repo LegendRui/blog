@@ -1055,7 +1055,9 @@ body .markdown-body
 .codehilite .vi{color:teal}
 .codehilite .il{color:#009999}
 .codehilite .gc{color:#999;background-color:#EAF2F5}
-</style><title>C++ Primer学习笔记之重载运算与类型转换</title></head><body><article class="markdown-body"><h1 id="c-primer">C++ Primer学习笔记之重载运算与类型转换<a class="headerlink" href="#c-primer" title="Permanent link"></a></h1>
+</style><title>C++ Primer学习笔记之重载运算与类型转换</title></head><body><article class="markdown-body"><p><center></p>
+<h1 id="c-primer">C++ Primer学习笔记之重载运算与类型转换<a class="headerlink" href="#c-primer" title="Permanent link"></a></h1>
+<p></center></p>
 <p>关于重载运算符值得注意的几点：</p>
 <ul>
 <li>运算对象求值顺序的规则无法应用到重载的运算符上</li>
@@ -1065,10 +1067,106 @@ body .markdown-body
 <h2 id="1">1. 输入、输出运算符<a class="headerlink" href="#1" title="Permanent link"></a></h2>
 <h3 id="11">1.1 重载输入运算符&lt;&lt;<a class="headerlink" href="#11" title="Permanent link"></a></h3>
 <p>通常情况下，输入运算符的第一个形参是一个非常量ostream对象的引用（因为向流写入内容会改变其状态，并且我们没法直接复制ostream对象），第二个形参是我们要打印的类类型的引用。</p>
-<p>输入输出运算符一般被声明为友元。</p>
+<p>输入输出运算符一般被声明为友元。
+<div class="codehilite"><pre>ostream &amp;operator(ostream &amp;os, const Sales_data &amp;item)
+{
+    os &lt;&lt; item.isbn() &lt;&lt; &quot; &quot; &lt;&lt; item.units_sold &lt;&lt; &quot; &quot;
+        &lt;&lt; item.revenue &lt;&lt; &quot; &quot; &lt;&lt; item.avg_price();
+
+    return os;
+}
+</pre></div></p>
+<h1 id="12">1.2 重载输入运算符<a class="headerlink" href="#12" title="Permanent link"></a></h1>
+<p>通常情况下，输入运算符的第一个形参是运算符将要读取的流的引用，第二个形参是将要读入的对象的引用。</p>
+<p>在执行输入运算符时可能发生下列错误：</p>
+<ul>
+<li>当流含有错误类型的数据时读取操作可能失败 </li>
+<li>当读取操作到达文件末尾或者遇到输入流的其他错误时也会失败</li>
+</ul>
+<p>因此，输入运算符必须处理可能失败的情况。
+<div class="codehilite"><pre>istream &amp;operator(istream &amp;is, Sales_data &amp;item)
+{
+    double price;
+    is &gt;&gt; item.bookNo &gt;&gt; item.units_sold &gt;&gt; price;
+    if (is)     // 检查是否输入成功
+
+        item.revenue = item.units_sold * price;
+    else
+        item = Sales_data();     // 输入失败，对象被赋予默认状态
+
+    return is;
+}
+</pre></div></p>
 <h2 id="2">2. 算数、关系运算符<a class="headerlink" href="#2" title="Permanent link"></a></h2>
+<p>通常情况下，算数和关系运算符应被定义为非成员函数以允许对左侧或右侧的运算对象进行转换。<br />
+如果类同时定义了算术运算符和相关的复合赋值运算符，则通常情况下应该使用复合赋值来实现算术运算符，因为这样可以提高效率。</p>
+<h3 id="21">2.1 相等运算符<a class="headerlink" href="#21" title="Permanent link"></a></h3>
+<p>如果某个类在逻辑上有相等性的含义，则该类应该定义operator==，这样做可以使得用户更容易使用标准库算法来处理这个类。
+<div class="codehilite"><pre>bool operator==(const Sales_data &amp;lhs, const Sales_data &amp;rhs)
+{
+    return lhs.isbn() == rhs.isbn() &amp;&amp;
+            lhs.units_sold == rhs.units_sold &amp;&amp;
+            lhs.revenue == rhs.revenue;
+}
+
+bool operator!=(const Sales_data &amp;lhs, const Sales_data &amp;rhs)
+{
+    return !(lhs == rhs);
+}
+</pre></div></p>
+<h3 id="22">2.2 关系运算符<a class="headerlink" href="#22" title="Permanent link"></a></h3>
+<p>通常情况下关系运算符应该<br />
+1. 定义顺序关系，令其与关联容器中对关键字的要求一致；并且<br />
+2. 如果类同时也含有==运算符的话，则定义一种关系令其与==保持一致。特别是，如果两个对象是！=的，那么一个对象应该&lt;另外一个。  </p>
 <h2 id="3">3. 赋值运算符<a class="headerlink" href="#3" title="Permanent link"></a></h2>
+<p>在拷贝控制一章已经提到过拷贝赋值和移动赋值运算符。此外，类还可以定义其他赋值运算符以使用别的类型作为右值运算对象。例如：
+<div class="codehilite"><pre>class StrVec {
+public:
+    StrVec &amp;operator=(std::initializer_list&lt;std::string&gt;);
+};
+
+StrVec &amp;StrVec::operator=(std::initializer_list&lt;std::string&gt;)
+{
+    auto data = alloc_n_copy(il.begin(), il.end());
+    free();
+    elements = data.first;
+    first_free = cap = data.second;
+    return *this;
+}
+
+vector&lt;string&gt; v;
+v = {&quot;a&quot;, &quot;an&quot;, &quot;the&quot;};
+</pre></div></p>
+<p>不管形参的类型是什么，赋值运算符都必须定义为成员函数。</p>
+<p><strong>复合赋值运算符</strong>不非得是类的成员，但我们还是倾向如此。
+<div class="codehilite"><pre>Sales_data&amp; Sales_data::operator+=(const Sales_data &amp;rhs)
+{
+    units_sold += rhs.units_sold;
+    revenue += rhs.revenue;
+    return *this;
+}
+</pre></div></p>
 <h2 id="4">4. 下标运算符<a class="headerlink" href="#4" title="Permanent link"></a></h2>
+<p>表示容器的类通常可以通过元素在容器中的位置访问元素，这些类一般会定义下标运算符operator[]。</p>
+<p>下标运算符必须是成员函数。为了兼容内置原始定义，下标运算符通常以所访问元素的引用作为返回值，使得下标可以出现在赋值运算符的任一端。</p>
+<p>定义下标运算符时通常定义两个版本：一个返回<strong>普通引用</strong>，另一个返回<strong>常量引用</strong>。例如：
+<div class="codehilite"><pre>class StrVec{
+public:
+    sdt::string&amp; operator[](std::size_t n)
+            {   return elements[n];     }
+    const std::string&amp; operator[]{std::string size_t} const
+            {   return elements[n];     }
+private:
+    std::string *elements;      // 指向数组首元素的指针
+};
+
+const StrVec cvec = svec;
+if (svec.size() &amp;&amp; svec[0].empty()) 
+{
+    svec[0] = &quot;zero&quot;;   // 正确：下标运算符返回string的引用
+    cvec[0] = &quot;Zip&quot;;    // 错误：对cvec取下标返回的是常量引用
+}
+</pre></div></p>
 <h2 id="5">5. 递增、递减运算符<a class="headerlink" href="#5" title="Permanent link"></a></h2>
 <h2 id="6">6. 成员访问运算符<a class="headerlink" href="#6" title="Permanent link"></a></h2>
 <h2 id="7">7. 函数调用运算符<a class="headerlink" href="#7" title="Permanent link"></a></h2>
