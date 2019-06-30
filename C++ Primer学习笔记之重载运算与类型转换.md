@@ -130,9 +130,111 @@ if (svec.size() && svec[0].empty())
 ```
 
 ## 5. 递增、递减运算符
-C++并不要求递增和递减运算符必须是类的成员。但
+C++并不要求递增和递减运算符必须是类的成员。但因它们能改变对象的状态，因此建议设定为成员函数。
+
+定义递增和递减运算符的类应该同时定义前置版本和后置版本。
+### 前置递增/递减运算符
+以StrBlobPtr类为例：
+```
+class StrBlobPtr
+{
+public:
+    StrBlobPtr operator++();    // 前置版本
+    StrBlobPtr operator--();
+};
+
+StrBlobPtr& StrBlobPtr::operator++()
+{
+    check(curr, "increment past end of StrBlobPtr");
+    ++curr;
+    return *this;
+}
+
+StrBlobPtr& StrBlobPtr::operator--()
+{
+    --curr;
+    check(curr, "decrement past begin StrBlobPtr");
+    return *this;
+}
+```
+
+### 后置递增/递减运算符
+为了与前置版本区别，后置版本接收一个额外的int型的形参。
+```
+class StrBlobPtr
+{
+public:
+    StrBlobPtr operator++(int);
+    StrBlobPtr operator--(int);
+};
+
+StrBlobPtr StrBlobPtr::operator++(int)
+{
+    // 此处无须检查有效性
+    StrBlobPtr ret = *this;
+    ++*this;
+    return ret;
+}
+
+StrBlobPtr StrBlobPtr::operator--(int)
+{
+    StrBlobPtr ret = * this;
+    --*this;
+    return ret;
+}
+```
+
+### 显式地调用后置运算符
+```
+    StrBlobPtr p(a1);
+    p.operator(0);      // 后置版本
+    p.operator();       // 前置版本
+```
+
 ## 6. 成员访问运算符
+在迭代器和智能指针类中常常用到解引用运算（*）和箭头运算符（->）。以StrBlobPtr类为例：
+```
+class StrBloPtr {
+public:
+    std::string& operator*() const
+    {   
+        auto p = check(curr, "dereference past end");
+        return (*p)[curr];
+    }
+    std::string& operator->() const
+    {
+        return & this->operator*();
+    }
+};
+
+StrBlob a1 = {"hi", "bye", "now"};
+StrBlobPtr p(a1);       // p指向a1
+*p = "okay";
+cout << p->size() << endl;
+cout << (*p).size() << endl;
+```
+
+### 对箭头运算符返回值的限定
+point->mem的执行过程如下：
+
+1. 如果point是指针，则我们应用内置的箭头运算符，表达式等价于(*point).mem。首先解引用该指针，然后从所获得的对象中获取指定的成员。如果point所指的类型没有名为mem的成员，程序会发生错误。
+2. 如果point是定义了operator->的类的一个对象，则C++使用point.operator->()的结果来获取men。其中，如果该结果是一个指针，则执行第一步；如果该结果本身含有重载的operator->()，则重复调用当前步骤。最终，当这一过程结束是程序或者返回了所需的内容，或者返回一些表示程序错误的信息。
 
 ## 7. 函数调用运算符
+如果类重载了重载了函数调用运算符，可以像使用函数一样使用该类的对象。因为这样的类同时也能存储状态，所以比普通函数更加灵活。
+```
+struct absInt
+{
+    int operator()(int val) const {
+        return val < 0 ? -val : val;
+    }
+};
+int i =  42;
+absInt absObj;
+int ui = absObi(i); 
+```
 
+### 含有状态的函数对象类
+函数对象类通常含有一些数据成员
+函数调用运算符必须是成员函数。定义了调用运算符的类的对象被称为函数对象。
 ## 8. 重载、类型转换与运算符

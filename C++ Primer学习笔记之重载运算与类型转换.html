@@ -1167,7 +1167,99 @@ if (svec.size() &amp;&amp; svec[0].empty())
 }
 </pre></div></p>
 <h2 id="5">5. 递增、递减运算符<a class="headerlink" href="#5" title="Permanent link"></a></h2>
-<p>C++并不要求递增和递减运算符必须是类的成员。但</p>
+<p>C++并不要求递增和递减运算符必须是类的成员。但因它们能改变对象的状态，因此建议设定为成员函数。</p>
+<p>定义递增和递减运算符的类应该同时定义前置版本和后置版本。</p>
+<h3 id="_1">前置递增/递减运算符<a class="headerlink" href="#_1" title="Permanent link"></a></h3>
+<p>以StrBlobPtr类为例：
+<div class="codehilite"><pre>class StrBlobPtr
+{
+public:
+    StrBlobPtr operator++();    // 前置版本
+    StrBlobPtr operator--();
+};
+
+StrBlobPtr&amp; StrBlobPtr::operator++()
+{
+    check(curr, &quot;increment past end of StrBlobPtr&quot;);
+    ++curr;
+    return *this;
+}
+
+StrBlobPtr&amp; StrBlobPtr::operator--()
+{
+    --curr;
+    check(curr, &quot;decrement past begin StrBlobPtr&quot;);
+    return *this;
+}
+</pre></div></p>
+<h3 id="_2">后置递增/递减运算符<a class="headerlink" href="#_2" title="Permanent link"></a></h3>
+<p>为了与前置版本区别，后置版本接收一个额外的int型的形参。
+<div class="codehilite"><pre>class StrBlobPtr
+{
+public:
+    StrBlobPtr operator++(int);
+    StrBlobPtr operator--(int);
+};
+
+StrBlobPtr StrBlobPtr::operator++(int)
+{
+    // 此处无须检查有效性
+    StrBlobPtr ret = *this;
+    ++*this;
+    return ret;
+}
+
+StrBlobPtr StrBlobPtr::operator--(int)
+{
+    StrBlobPtr ret = * this;
+    --*this;
+    return ret;
+}
+</pre></div></p>
+<h3 id="_3">显式地调用后置运算符<a class="headerlink" href="#_3" title="Permanent link"></a></h3>
+<div class="codehilite"><pre>    StrBlobPtr p(a1);
+    p.operator(0);      // 后置版本
+    p.operator();       // 前置版本
+</pre></div>
+
 <h2 id="6">6. 成员访问运算符<a class="headerlink" href="#6" title="Permanent link"></a></h2>
+<p>在迭代器和智能指针类中常常用到解引用运算（*）和箭头运算符（-&gt;）。以StrBlobPtr类为例：
+<div class="codehilite"><pre>class StrBloPtr {
+public:
+    std::string&amp; operator*() const
+    {   
+        auto p = check(curr, &quot;dereference past end&quot;);
+        return (*p)[curr];
+    }
+    std::string&amp; operator-&gt;() const
+    {
+        return &amp; this-&gt;operator*();
+    }
+};
+
+StrBlob a1 = {&quot;hi&quot;, &quot;bye&quot;, &quot;now&quot;};
+StrBlobPtr p(a1);       // p指向a1
+*p = &quot;okay&quot;;
+cout &lt;&lt; p-&gt;size() &lt;&lt; endl;
+cout &lt;&lt; (*p).size() &lt;&lt; endl;
+</pre></div></p>
+<h3 id="_4">对箭头运算符返回值的限定<a class="headerlink" href="#_4" title="Permanent link"></a></h3>
+<p>point-&gt;mem的执行过程如下：</p>
+<ol>
+<li>如果point是指针，则我们应用内置的箭头运算符，表达式等价于(*point).mem。首先解引用该指针，然后从所获得的对象中获取指定的成员。如果point所指的类型没有名为mem的成员，程序会发生错误。</li>
+<li>如果point是定义了operator-&gt;的类的一个对象，则C++使用point.operator-&gt;()的结果来获取men。其中，如果该结果是一个指针，则执行第一步；如果该结果本身含有重载的operator-&gt;()，则重复调用当前步骤。最终，当这一过程结束是程序或者返回了所需的内容，或者返回一些表示程序错误的信息。</li>
+</ol>
 <h2 id="7">7. 函数调用运算符<a class="headerlink" href="#7" title="Permanent link"></a></h2>
+<p>如果类重载了重载了函数调用运算符，可以像使用函数一样使用该类的对象。因为这样的类同时也能存储状态，所以比普通函数更加灵活。
+<div class="codehilite"><pre>struct absInt
+{
+    int operator()(int val) const {
+        return val &lt; 0 ? -val : val;
+    }
+};
+int i =  42;
+absInt absObj;
+int ui = absObi(i); 
+</pre></div></p>
+<p>函数调用运算符必须是成员函数。</p>
 <h2 id="8">8. 重载、类型转换与运算符<a class="headerlink" href="#8" title="Permanent link"></a></h2></article></body></html>
