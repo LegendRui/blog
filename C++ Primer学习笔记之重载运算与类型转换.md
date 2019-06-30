@@ -234,7 +234,96 @@ absInt absObj;
 int ui = absObi(i); 
 ```
 
-### 含有状态的函数对象类
-函数对象类通常含有一些数据成员
 函数调用运算符必须是成员函数。定义了调用运算符的类的对象被称为函数对象。
+
+函数对象类通常含有一些数据成员，这些成员通常被用于定制调用运算符中的操作。例如：
+```
+class PrintString {
+public:
+    PrintString(ostream &o = cout, char c = ' ') :
+            os(o), sep(c) { }
+            void operator() const(string &s) const {  os << s << sep; }
+private:
+    ostream &os;
+    char sep;
+};
+
+PrintString printer;
+printer(s);         // 在cout中打印s，后面跟一个空格
+PrintString errors(cerr, '\n');
+errors(s);          // 在cerr中打印s，后面跟一个换行符
+```
+
+函数对象常常作为泛型算法的实参。例如：
+`for_each(vs.begin(), vs.end(), PrintString(cerr, '\n'));`
+
+
+### 7.1 lambda是函数对象
+当我们编写一个lambda后，编译器将该表达式翻译成一个未命名类的未命名对象。在lambda表达式产生的类中含有一个重载的函数调用运算符，例如：
+```
+stable_sort(words.begin(), words.end(), 
+                [](const string &a, const string &b) 
+                { return a.size() < b.size(); });
+```
+
+其行为类似于下面这个类的未命名对象：
+```
+class ShortString {
+public:
+    bool operator()(const string &s1, const string &s2) const
+    {
+        return s1.size() < s2.size();
+    }
+};
+```
+
+默认情况下，lambda不能改变它捕获的变量。因此，由lambda产生的类中的函数调用运算符是一个const成员函数。
+
+### 表示lambda及相应捕获行为的类
+当一个lambda表达式通过引用捕获变量时，将由程序负责确保lambda执行时引用所引的对象却是存在。通过值捕获的变量被拷贝到lambda中，因此，这种lambda产生的类必须为每个值捕获的变量建立对应的数据成员，同时创建构造函数。例如：
+```
+auto wc = find_if(words.begin(), words.end(),
+                [sz](const string &a)
+                    { return a.size() >= sz;});
+```
+
+该表达式产生的类将形如：
+```
+class SizeComp {
+    SizeComp(size_t n) : sz(n) { } // 该形参对应捕获的变量
+    bool operator()(const string &s) const
+        { return s.size() >= sz; }
+private:
+    size_t sz;
+}
+```
+
+这个合成的类不含有默构造函数，因此要是用必须提供一个实参：
+```
+auto wc = find_if(words.begin(), words.end(), SizeComp(sz));
+```
+
+lambda表达式产生的类不含默认构造函数、赋值运算符及默认析构函数；它是否含有默认的拷贝/移动构造函数则通常要视捕获的数据成员类型而定。
+
+### 7.2 标准库定义的函数对象
+标准库定义了一组表示算术运算符、关系运算符和逻辑运算符的类，每个类分别定义了一个执行明明操作的调用运算符。这些类型被定义为functional头文件中。
+
+|标准库函数对象|||
+|:-------:|:-------:|:-------:|
+|算术|关系|逻辑|
+| plus<Type> | equal_to<Type> | logical_and<Type> |
+| minus<Type> | not_equal_to<Type> | logical_or<Type> |
+| multiplies<Type> | grater<Type> | logical_not<Type> |
+| divides<Type> | greater_equal<Type> |     |
+| modulus<Type> | less<Type> |      |  
+| negate<Type> | less_equal<Type> |      |   
+
+
+```
+plus<int> int Add;          // 可执行int加法的函数对象
+negate<int> intNegate;      // 可执行int值取反的函数对象
+int sum = intAdd(10, 20);
+sum = int Negate(intAdd(10, 20));
+sum = intAdd(10, intNegate(10));
+```
 ## 8. 重载、类型转换与运算符
