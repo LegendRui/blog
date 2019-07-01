@@ -133,7 +133,7 @@ if (svec.size() && svec[0].empty())
 C++并不要求递增和递减运算符必须是类的成员。但因它们能改变对象的状态，因此建议设定为成员函数。
 
 定义递增和递减运算符的类应该同时定义前置版本和后置版本。
-### 前置递增/递减运算符
+#### 前置递增/递减运算符
 以StrBlobPtr类为例：
 ```
 class StrBlobPtr
@@ -158,7 +158,7 @@ StrBlobPtr& StrBlobPtr::operator--()
 }
 ```
 
-### 后置递增/递减运算符
+#### 后置递增/递减运算符
 为了与前置版本区别，后置版本接收一个额外的int型的形参。
 ```
 class StrBlobPtr
@@ -184,7 +184,7 @@ StrBlobPtr StrBlobPtr::operator--(int)
 }
 ```
 
-### 显式地调用后置运算符
+#### 显式地调用后置运算符
 ```
     StrBlobPtr p(a1);
     p.operator(0);      // 后置版本
@@ -214,7 +214,7 @@ cout << p->size() << endl;
 cout << (*p).size() << endl;
 ```
 
-### 对箭头运算符返回值的限定
+#### 对箭头运算符返回值的限定
 point->mem的执行过程如下：
 
 1. 如果point是指针，则我们应用内置的箭头运算符，表达式等价于(*point).mem。首先解引用该指针，然后从所获得的对象中获取指定的成员。如果point所指的类型没有名为mem的成员，程序会发生错误。
@@ -279,7 +279,7 @@ public:
 
 默认情况下，lambda不能改变它捕获的变量。因此，由lambda产生的类中的函数调用运算符是一个const成员函数。
 
-### 表示lambda及相应捕获行为的类
+#### 表示lambda及相应捕获行为的类
 当一个lambda表达式通过引用捕获变量时，将由程序负责确保lambda执行时引用所引的对象却是存在。通过值捕获的变量被拷贝到lambda中，因此，这种lambda产生的类必须为每个值捕获的变量建立对应的数据成员，同时创建构造函数。例如：
 ```
 auto wc = find_if(words.begin(), words.end(),
@@ -326,4 +326,94 @@ int sum = intAdd(10, 20);
 sum = int Negate(intAdd(10, 20));
 sum = intAdd(10, intNegate(10));
 ```
+
+### 7.3 可调用对象与function
+C++中可调用的对象有：函数、函数指针、lambda表达式、bind创建的对象以及重载了函数调用运算符的类。不同类型的可调用对象可能共享同一种调用形式：
+```
+int add(int i,int j) { return i + j; }
+auto mod = [](int i, int j) { return i % j; }
+struct divide {
+    int operator()(int denominator, int divisor) {
+        return denominitor / divisor;
+    }
+};
+```
+
+上面三个可调用对象共享一种调用形式：
+```
+int(int, int)
+```
+
+#### 标准库function类型
+有时候，我们可能希望将add，mod和divide放入一个数据结构中，然而它们的类型不兼容。为了解决这一问题，标准库在functional头文件中定义了function库：
+```
+map<string, function<int(int, int)>> binops = {
+    {"+", add},                                         // 函数指针
+    {"-", std::minus<int>()},                           // 标准库函数对象
+    {"/", divide()},                                    // 定义的对象
+    {"*", []int(int i, int j) { return i * j; }},       // lambda表达式
+    {"%", mod}                                          // lambda表达式
+};
+
+binops["+"](10, 5);
+binops["-"](10, 5);
+binops["*"](10, 5);
+binops["/"](10, 5);
+binops["%"](10, 5);
+```
+
+#### 重载的函数与function
+不可以直接将重载的函数名字存入function类型的对象中：
+
+```
+int add(int i, int j) { return i + j; }
+Sales_data add(const Sales_data&, const Sales_data&);
+map<string, funtion<int(int, int>> binops;
+binops.insert({"+", add}); // 错误，产生歧义
+```
+
+消除歧义的方法有两种：一是使用函数指针，二是使用lambda表达式：
+```
+int (*fp)(int, int) = add;
+binops.insert( {"+", fp} );     // 正确
+// binops.insert( {"+", [](int a, int b) { return add(a, b);} } ); // 正确
+```
+
 ## 8. 重载、类型转换与运算符
+类型转换运算符既没有显式的返回类型，也没有形参，还必须被定义成类的成员函数，而且由于通常不应改变带转换对象的内容，被定义为const成员。一般形式如下：
+```
+operator type() const;
+```
+
+举个例子：
+```
+class SmallInt {
+public:
+    SmallInt(int i = 0) : val(i)
+    {
+        if (i < 0 || i > 255)
+            throw std::out_of_range("Bad SmallInt value");
+    }
+    operator int() const { return val; 
+private:
+    std::size_t val;
+}
+
+SmallInt si;
+si = 4;     // 将4隐式转换为SmallInt，再调用SmallInt::operator=
+si + 3;     // 隐式转换为int
+```
+
+为了防止隐式类型转换可能带来的异常，C++11标准引入了显式的类型转换运算符：
+```
+class SmllInt {
+public:
+    explict operator int() const { return val; }
+};
+
+SmallInt si = 3;            // 正确
+si + 3;                     // 错误
+static_cast<int>(si) + 3;   // 正确
+```
+
+但这条规则有例外：当表达式被用作条件时，显式类型转换会自动执行。
