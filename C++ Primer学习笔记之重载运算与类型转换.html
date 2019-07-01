@@ -1261,5 +1261,106 @@ int i =  42;
 absInt absObj;
 int ui = absObi(i); 
 </pre></div></p>
-<p>函数调用运算符必须是成员函数。</p>
+<p>函数调用运算符必须是成员函数。定义了调用运算符的类的对象被称为函数对象。</p>
+<p>函数对象类通常含有一些数据成员，这些成员通常被用于定制调用运算符中的操作。例如：
+<div class="codehilite"><pre>class PrintString {
+public:
+    PrintString(ostream &amp;o = cout, char c = &#39; &#39;) :
+            os(o), sep(c) { }
+            void operator() const(string &amp;s) const {  os &lt;&lt; s &lt;&lt; sep; }
+private:
+    ostream &amp;os;
+    char sep;
+};
+
+PrintString printer;
+printer(s);         // 在cout中打印s，后面跟一个空格
+PrintString errors(cerr, &#39;\n&#39;);
+errors(s);          // 在cerr中打印s，后面跟一个换行符
+</pre></div></p>
+<p>函数对象常常作为泛型算法的实参。例如：
+<code>for_each(vs.begin(), vs.end(), PrintString(cerr, '\n'));</code></p>
+<h3 id="71-lambda">7.1 lambda是函数对象<a class="headerlink" href="#71-lambda" title="Permanent link"></a></h3>
+<p>当我们编写一个lambda后，编译器将该表达式翻译成一个未命名类的未命名对象。在lambda表达式产生的类中含有一个重载的函数调用运算符，例如：
+<div class="codehilite"><pre>stable_sort(words.begin(), words.end(), 
+                [](const string &amp;a, const string &amp;b) 
+                { return a.size() &lt; b.size(); });
+</pre></div></p>
+<p>其行为类似于下面这个类的未命名对象：
+<div class="codehilite"><pre>class ShortString {
+public:
+    bool operator()(const string &amp;s1, const string &amp;s2) const
+    {
+        return s1.size() &lt; s2.size();
+    }
+};
+</pre></div></p>
+<p>默认情况下，lambda不能改变它捕获的变量。因此，由lambda产生的类中的函数调用运算符是一个const成员函数。</p>
+<h3 id="lambda">表示lambda及相应捕获行为的类<a class="headerlink" href="#lambda" title="Permanent link"></a></h3>
+<p>当一个lambda表达式通过引用捕获变量时，将由程序负责确保lambda执行时引用所引的对象却是存在。通过值捕获的变量被拷贝到lambda中，因此，这种lambda产生的类必须为每个值捕获的变量建立对应的数据成员，同时创建构造函数。例如：
+<div class="codehilite"><pre>auto wc = find_if(words.begin(), words.end(),
+                [sz](const string &amp;a)
+                    { return a.size() &gt;= sz;});
+</pre></div></p>
+<p>该表达式产生的类将形如：
+<div class="codehilite"><pre>class SizeComp {
+    SizeComp(size_t n) : sz(n) { } // 该形参对应捕获的变量
+    bool operator()(const string &amp;s) const
+        { return s.size() &gt;= sz; }
+private:
+    size_t sz;
+}
+</pre></div></p>
+<p>这个合成的类不含有默构造函数，因此要是用必须提供一个实参：
+<div class="codehilite"><pre>auto wc = find_if(words.begin(), words.end(), SizeComp(sz));
+</pre></div></p>
+<p>lambda表达式产生的类不含默认构造函数、赋值运算符及默认析构函数；它是否含有默认的拷贝/移动构造函数则通常要视捕获的数据成员类型而定。</p>
+<h3 id="72">7.2 标准库定义的函数对象<a class="headerlink" href="#72" title="Permanent link"></a></h3>
+<p>标准库定义了一组表示算术运算符、关系运算符和逻辑运算符的类，每个类分别定义了一个执行明明操作的调用运算符。这些类型被定义为functional头文件中。</p>
+<table>
+<thead>
+<tr>
+<th align="center">标准库函数对象</th>
+<th align="center"></th>
+<th align="center"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">算术</td>
+<td align="center">关系</td>
+<td align="center">逻辑</td>
+</tr>
+<tr>
+<td align="center">plus<Type></td>
+<td align="center">equal_to<Type></td>
+<td align="center">logical_and<Type></td>
+</tr>
+<tr>
+<td align="center">minus<Type></td>
+<td align="center">not_equal_to<Type></td>
+<td align="center">logical_or<Type></td>
+</tr>
+<tr>
+<td align="center">multiplies<Type></td>
+<td align="center">grater<Type></td>
+<td align="center">logical_not<Type></td>
+</tr>
+<tr>
+<td align="center">divides<Type></td>
+<td align="center">greater_equal<Type></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">modulus<Type></td>
+<td align="center">less<Type></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">negate<Type></td>
+<td align="center">less_equal<Type></td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
 <h2 id="8">8. 重载、类型转换与运算符<a class="headerlink" href="#8" title="Permanent link"></a></h2></article></body></html>
