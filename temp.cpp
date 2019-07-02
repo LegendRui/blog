@@ -2,7 +2,8 @@ class Quote {
 public:
 	Quote(const string& book, double p);
 };
-class Bulk_quote : pubic Quote {
+
+class Bulk_quote : public Quote {
 public:
 	Bulk_quote(const std::string& book, double p,
 				std::size_t qty, double disc) :
