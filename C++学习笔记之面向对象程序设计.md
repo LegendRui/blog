@@ -189,8 +189,63 @@ double undiscounted = baseP->Quote::net_price(42);
 
 ## 3 抽象基类
 
+#### 纯虚函数
+可以将函数定义为纯虚函数，告诉用户该函数是没有实际意义的。
+```
+class Disc_quote : public Quote {
+public: 
+    Disc_quote() = default;
+    Disc_quote(const std::string& book, double price,
+            std::size_t qty, double disc) :
+            Quote(book, price), quantity(qty), discount(disc) { }
+    double net_price(std::size_t) const = 0;        // 纯虚函数
+proteceted：
+    std::size_t quantity = 0;
+    double discount = 0.0;
+};
+```
+
+含有纯虚函数的类是抽象基类，抽象基类是不可以（直接）创建对象的。
+
 ## 4 访问控制与继承
 
+#### 受保护的成员
+protected成员：
+
++ 对类的用户来说是不可访问的
++ 对派生类的成员和友元来说是可访问的
++ 派生类的成员或友元只能通过派生类对象来访问基类的受保护的成员
+
+#### 友元与继承
+友元关系不可被继承，基类的友元在访问派生类成员时不具有特殊性。
+
+#### 改变个别成员的可访问性
+有时我们需要改变派生类继承的某个成员的访问级别。可以使用using声明打到这一目的：
+```
+class Base {
+public:
+    std::size_t() const { return n; }
+protected:
+    std::size_t n;
+};
+
+class Derived : private Base {
+public:
+    usnig Base::size;       // 没有括号，只用名字就行
+protected:
+    using Base::n;
+};
+```
+
+注：派生类只能为它可以访问的名字提供using声明。
+
+#### 默认的继承保护级别
+默认情况下，使用class关键字定义的派生类是私有继承的，而使用struct关键字定义的派生类是公有继承的：
+```
+class Base { /* ... */ };
+struct D1 : Base { /* ... */ };     // public继承
+class D2 : Base { /* ... */ };      // private继承
+```
 ## 5 继承中的类作用域
 
 ## 6 构造函数与拷贝控制
