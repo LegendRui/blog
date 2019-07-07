@@ -406,6 +406,27 @@ public:
 
 <br><br>
 ### 6.4 继承的构造函数
+派生类继承基类构造函数的方式是提供using声明：
+```
+class Bulk_quote : public Disc_quote {
+public:
+    using Disc_quote::Disc_quote;               // 继承Disc_quote的构造函数
+    double net_price(std::size_t) const;        
+};
+```
+using声明语句将令编译器产生代码，代码形如：
+```
+derived(parms) : base(args) { }
+```
+例如编译器为Bulk_quote类生成的继承构造函数等价于：
+```
+Bulk_quote(const std::string& book, double price, std::size_t qty, double disc)
+            : Disc_quote(book, price, qty, disc) { }
+```
+
+#### 继承的构造函数的特点
+和普通成员的using声明不一样，一个构造函数的using声明不会改变该构造函数的访问级别。
+
 <br/><br/>
-## 7 容器与继承
+
 
