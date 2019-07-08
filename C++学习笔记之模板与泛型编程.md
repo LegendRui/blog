@@ -143,4 +143,37 @@ T& Blob<T>::back()
 }
 ```
 
+下标运算符：
+```
+template <typename T>
+T& Blob<T>::operator[](size_type i)
+{
+    check(i, "subscript out of range");
+    return (*data)[i];
+}
+```
 
+### 1.3 模板参数
+#### 模板参数与作用域
+在模板内不能重用模板参数名：
+```
+typedef double A;
+tempplate <typename A, typename B> void f(A a, B b)
+{
+    A tmp = a;          // tmp的类型为模板参数A的类型，而非double
+    double B;           // 错误：重声明模板参数B
+}
+```
+
+#### 使用类的类型成员
+默认情况下，C++语言假定通过作用域运算符访问的名字不是类型。因此，如果我们希望使用一个模板类型参数的类型成员，就必须显式高速编译器该名字是一个类型。可以通过关键字typename实现这一点：
+```
+template <typename T>
+typename T::value_type top(const T& c)
+{
+    if (!c.empty())
+        return c.back();
+    else
+        return typename T::value_type();
+}
+```
