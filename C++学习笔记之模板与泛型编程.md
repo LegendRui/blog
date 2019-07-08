@@ -121,3 +121,26 @@ private:
 template <typename T> 
 ret-type Blob<T>::member-name(parm-list)
 ```
+
+####  check和元素访问成员
+check成员：
+```
+template <typename T>
+void Blob<T>::check(size_t i, const std::string &msg) const
+{
+    if (i >= data -> size())
+        throw std::out_of_range(msg);
+}
+```
+
+back成员：
+```
+template <typename T>
+T& Blob<T>::back() 
+{
+    check(0, "back on empty Blob");
+    return data -> back();
+}
+```
+
+
