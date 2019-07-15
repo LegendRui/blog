@@ -1,5 +1,5 @@
 # C++学习笔记之模板与泛型编程
-Created by *Mistery* at Jun 8, 2019.
+Created by *Mistery* at Jul 8, 2019.
 <br><br>
 
 ## 1. 定义模板
@@ -177,3 +177,6 @@ typename T::value_type top(const T& c)
         return typename T::value_type();
 }
 ```
+
+### 1.4 成员模板
+一个类可以包含本身是模板的成员函数。这种成员被称为成员模板。成员模板不能是虚函数。
