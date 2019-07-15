@@ -1,4 +1,4 @@
-<font size="2">
+<font size="3">
 # C++知识点
 
 ##1.顶层/底层const
@@ -32,5 +32,13 @@ delete操作分两步：
 - ii) 编译器调用名为operator delete（或者operator delete[]）的标准库函数释放内存空间
 
 因为operator new用在对象构造之前，而operator delete用在对象销毁之后，所以这两个函数如果定义为类成员时必须是static的（默认就是static的）。
+
+## 3.dynamic_cast运算符
+dynamic_cast运算符的使用形式如下：  
+dynamic_cast<type*>(e)  
+dynamic_cast<tye&>(e)  
+dynamic_cast<type&&>(e)  
+type必须是一个类类型，并且通常应该含有虚函数。
+
 
 </font><br />
