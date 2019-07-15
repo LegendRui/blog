@@ -1,7 +1,7 @@
 <font size="3">
 # C++知识点
 
-##1.顶层/底层const
+## 1.顶层/底层const
 
 
 **顶层const：**表示指针本身是个常量  
@@ -18,7 +18,7 @@ const int &r = ci;          // 用于声明引用的都是底层const
 ```
 
 <br><br>
-##2.new和delete操作的过程
+## 2.new和delete操作的过程
 
 new操作分三步：
 
