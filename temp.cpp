@@ -1,11 +1,9 @@
-int f(int *const p)
-{
-	return *p + 1;
-}
+#include <iostream>
+using namespace std;
 
 int main()
 {
-	int a = 3;
-	f(&a);
+	int *array = new int[5];
+	cout << sizeof(double*) << " " << sizeof(double) << endl;
 	return 0;
 }
