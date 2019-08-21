@@ -47,4 +47,6 @@
     + test-and-set
     + exchange
 
-    
++ 信号量
+    + P()：sem减1，如果sem<0，等待，否则继续
+    + V()：sem加1，如果sem<=0,唤醒一个等待的P
