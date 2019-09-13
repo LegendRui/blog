@@ -52,6 +52,13 @@
     * 应用层：HTTP、DNS、SMTP
 
 ### 6. TCP与UDP的区别
++ TCP是面向连接的、可靠的，而UDP是非面向连接、不可靠的
++ TCP一对一，UDP支持一对一，一对多，多对一，多对多
++ TCP具有拥塞控制与流量控制而UDP没有
++ TCP报文长度动态改变而UDP不是
++ TCP传输单位为报文段，而UDP传输单位为用户数据报
++ TCP注重安全性，而UDP数据传输快
++ 用TCP的协议：FTP、Telnet、SMTP、POP3、HTTP(s)，用UDP的协议：DNS、SNMP、TFTP
 
 ### 7. HTTP与HTTPS的区别
 + 区别如下：
@@ -69,3 +76,7 @@
         - 部署成本高（购买证书，解密吃CPU）
 
 ### 8.浏览器中输入URL后会发生什么
+1. 域名解析获得IP地址：用到DNS、UDP协议
+2. 建立http连接：用到http协议
+3. 生成get请求报文：生成后交给TCP层处理，用到TCP与IP协议
+
