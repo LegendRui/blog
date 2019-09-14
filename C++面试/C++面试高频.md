@@ -87,6 +87,43 @@
 4. 释放TCP连接
 5. 客户端浏览器解析html内容
 
+### 10. socket编程中服务器端和客户端主要用到哪些函数
++ 基于TCP的socket
+    * Server
+        1. 创建socket：socket()
+        2. 设置socket属性：setsockopt()
+        3. 绑定IP、端口号：bind()
+        4. 设置允许的最大连接数：listen()
+        5. 接收客户端的连接：accept()
+        6. 收发数据：send()+recv() or read()+write()
+        7. 关闭网络连接：close()
+        8. 关闭监听
+    * Client
+        1. 创建socket：socket()
+        2. 设置socket属性：setsockopt()
+        3. 设置绑定IP、端口号：bind()
+        4. 设置要连接的IP及端口
+        4. 连接Server：connect()
+        5. 收发数据: send()+recv() / read()/write()
+        6. 关闭网络：close()
+![基于TCP的socket](..//pics//tcp_socket.png)
+
++ UDP的socket
+    * Server
+        1. 创建socket：socket()
+        2. 设置属性：setsockopt()
+        3. 绑定IP、端口：bind()
+        4. 循环收、发数据：recvfrom() + sendto()
+        5. 关闭连接
+    * Client
+        1. 创建socket：socket()
+        2. 设置属性：setsockopt()
+        3. 绑定IP、端口：bind()
+        4. 设置要连接的IP及端口
+        5. 发送、接收数据：sendto() + recvfrom()
+        6. 关闭连接
+![基于UDP的socket](..//pics//udp_socket.png)
+
 ### 红黑树的特点
 1. 每个节点要么是红的，要么是黑的；
 2. 根节点是黑的；
