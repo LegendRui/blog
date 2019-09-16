@@ -183,3 +183,50 @@
 归并排序|O(nlogn)|O(nlogn)|O(nlogn)|O(n)|稳定
 快速排序|O(nlogn)|O(nlogn)|O(n^2)|O(nlogn)|不稳定
 堆排序|O(nlogn)|O(nlogn)|O(nlogn)|O(1)|不稳定
+
+### 常用设计模式
++ 单例模式：主要解决全局使用的类频繁的创建和销毁的问题。单例模式下可以确保一个类只有一个实例，而且自行化实例并向整个系统提供这个实例。
+    * 多线程安全问题
+        - 饿汉式：基于class loader机制避免多线程同步问题，但可能
+        - 懒汉式：通过双重锁机制实现线程安全
+
++ 工厂模式：主要解决接口选择的问题。该模式下定义一个创建对象的接口，让其子类自己决定实例化哪一个工厂类，使其创建过程延迟到子类进行
+
++ 观察者模式：定义对象间的一种一对多的依赖关系。当被观察者发生状态改变时，观察者会受到通知。类似于回调函数。
+
++ 装饰器模式：对已经存在的某些类进行装饰，以拓展一些功能，从而动态的为一个对象增加新的功能。
+
+### OOP设计模式五大原则
++ 单一职责：避免相同的职责分配到不同的类中；避免一个类承担太多职责
++ 接口隔离：客户端不应实现一些它们不会使用的接口
++ 开放-封闭：在扩展性方面是开放的而在更改性方面是封闭的
++ 替换：子类型必须能替换掉它们的父类、并且出现在父类出现的任何地方
++ 依赖倒置：上层模块不应该依赖于下层模块
+
+### 手写Singleton模式
+```
+template<typename T> 
+class Singleton {
+public:
+    Singleton(const Singleton& ) = delete;
+    Singleton& operator=(const Singleton& ) = delete;
+    static T* getInstance() {
+        pthread_mutex_lock(&mutex);
+        if (uniqueInstance == nullptr) {
+            uniqueInstance = new T();
+        }
+        pthread_mutex_unlock(&mutex);
+        return uniqueInstance;
+    }
+private:
+    static T* uniqueInstance;
+    static pthread_mutex_t mutex;
+    Singleton() {}
+};
+
+template<typename T> 
+pthread_mutex_t Singleton<T>::mutex = PTHREAD_MUTEX_INITIALIZER;
+
+template<typename T> 
+T* Singleton<T>::uniqueInstance = nullptr;
+```
