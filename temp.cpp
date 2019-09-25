@@ -122,11 +122,27 @@ void MergeSortIteration(int A[], int len) {
 	}
 }
 
+void quickSort(int arr[], int l, int r) {
+	if (l >= r) return;
+	int pivot = arr[l];
+	int i = l, j = r;
+	while (i < j) {
+		while (i < j && arr[j] > pivot) j--;
+		if (i < j) 
+			arr[i++] = arr[j];
+		while (i < j && arr[i] < pivot) i++;
+		if (i < j)
+			arr[j--] = arr[i];
+	}
+	arr[i] = pivot;
+	quickSort(arr, l, i - 1);
+	quickSort(arr, i + 1, r);
+}
 
 int main() {
 	int A[] = {6, 5, 3, 1, 8, 7, 2, 4};
 	int n = sizeof(A) / sizeof(int);
-	MergeSortIteration(A, n);
+	quickSort(A, 0, n - 1);
 	for (int i = 0; i < n; ++i) {
 		cout << A[i] << " ";
 	}
