@@ -38,7 +38,7 @@ const int &r = ci;          // 用于声明引用的都是底层const
 ## 3.dynamic_cast与typeid运算符
 **dynamic_cast**运算符的使用形式如下：  
 dynamic_cast<type*>(e)  
-dynamic_cast<tye&>(e)  
+dynamic_cast<type&>(e)  
 dynamic_cast<type&&>(e)  
 其中type必须是一个类类型，并且通常应该含有虚函数。指针类型的使用例子：
 ```
