@@ -6,7 +6,7 @@
 
 3. [BOOL，int，float，指针变量 与“零值”比较的 if 语句](https://www.nowcoder.com/ta/review-c/review?query=&asc=true&order=knowledgePoint&page=10)
 
-4. [为什么标准头文件都有类似以下的结构？](https://www.nowcoder.com/ta/review-c/review?query=&asc=true&order=knowledgePoint&page=13)
+4. [为什么标准头文件都有类似以下的结n构？](https://www.nowcoder.com/ta/review-c/review?query=&asc=true&order=knowledgePoint&page=13)
 
 5. [请说出static和const关键字尽可能多的作用](https://www.nowcoder.com/ta/review-c/review?query=&asc=true&order=knowledgePoint&page=17)
 
