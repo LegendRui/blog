@@ -125,6 +125,8 @@
 ![基于UDP的socket](..//pics//udp_socket.png)
 
 ### Post与Get的区别
+https://www.cnblogs.com/logsharing/p/8448446.html
+https://baijiahao.baidu.com/s?id=1626599028653203490&wfr=spider&for=pc
 
 ### HTTP请求头部
 + 请求行
@@ -150,6 +152,9 @@
 + 代码段
     * 可执行代码
     * 只读常量
+
+### Linux C++调试工具
+https://www.cnblogs.com/lidabo/p/4377545.html
 
 ### 为什么构造函数不可以是虚函数？
 + 构造函数不需要是虚函数，也不允许是虚函数。因为当创建一个对象时，我们总是要明确指定对象的类型，尽管我们可能通过基类的指针或引用去访问它。
