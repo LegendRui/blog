@@ -125,8 +125,27 @@
 ![基于UDP的socket](..//pics//udp_socket.png)
 
 ### Post与Get的区别
-https://www.cnblogs.com/logsharing/p/8448446.html
-https://baijiahao.baidu.com/s?id=1626599028653203490&wfr=spider&for=pc
++ 表面区别
+
+| |Get|Post
+:--:|:--:|:--:
+编码类型|application/x-www-form-urlencoded|application/x-www-form-urlencoded或multipart/form-data
+数据长度限制|URL最大长度是2048个字符|无限制
+数据类型限制|ASCII字符|没有限制，可以是二进制数据
+安全性|较差，因为数据是URL的一部分|较好，数据不会保存在浏览器历史和服务器日志中
+可见性|数据在URL中，可见|数据不在URL中，不可见
+后退/刷新|无害|数据会重新提交
+缓存|可以|不可以
+书签|可以|不可以
+历史|参数保留在历史记录中|参数不会保留在历史记录中
+
++ 本质区别
+    * Get用于获取信息，无副作用，是幂等的，且可缓存，而Post用于修改服务器上的数据，有副作用，非幂等的，不可缓存
+    * 在传输上，都是基于TCP/IP协议的，没有区别；在报文格式上，不带参数时，区别在于请求行的方法不同（分别是Get和Post），带参数时，Get的参数在URL中，而Post的参数在请求体中
+
+参考：  
+[1] https://www.cnblogs.com/logsharing/p/8448446.html  
+[2] https://baijiahao.baidu.com/s?id=1626599028653203490&wfr=spider&for=pc
 
 ### HTTP请求头部
 + 请求行
