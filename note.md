@@ -180,3 +180,51 @@ https:是以安全为目标的 HTTP 通道，即 HTTP 下 加入 SSL 层进行�
 2. 强缓存失效，进入协商缓存阶段，首先验证ETag。ETag可以保证每一个资源是唯一的，资源变化都会导致ETag变化。服务器根据客户端上送的`If-None-Match`值来判断是否命中缓存。
 3. 协商缓存`Last-Modify`/`If-Modify-Since`阶段，客户端第一次请求资源时，服务服返回的header中会加上`Last-Modify`，`Last-modify`是一个时间标识该资源的最后修改时间。再次请求该资源时，request的请求头中会包含`If-Modify-Since`，该值为缓存之前返回的`Last-Modify`。服务器收到`If-Modify-Since`后，根据资源的最后修改时间判断是否命中缓存。
 
+
+## 盒模型
+CSS3 中的盒模型有以下两种：标准盒模型、IE（替代）盒模型。
+两种盒子模型都是由 content + padding + border + margin 构成，其大小都是由 content + padding + border 决定的，但是盒子内容宽/高度（即 width/height）的计算范围根据盒模型的不同会有所不同：
+**标准盒模型**：只包含 content 。
+**IE（替代）盒模型**：content + padding + border 。
+
+可以通过 box-sizing 来改变元素的盒模型：
+- box-sizing: content-box ：标准盒模型（默认值）。
+- box-sizing: border-box ：IE（替代）盒模型。
+
+## BFC（块级格式上下文）
+### 概念
+BFC 是 Block Formatting Context 的缩写，即块级格式化上下文。BFC是CSS布局的一个概念，是一个独立的渲染区域，规定了内部box如何布局， 并且这个区域的子元素不会影响到外面的元素，其中比较重要的布局规则有内部 box 垂直放置，计算 BFC 的高度的时候，浮动元素也参与计算。
+
+### 布局原理
++ 内部的Box会在垂直方向，一个接一个地放置
++ Box垂直方向的距离由margin决定，属于同一个BFC的两个相邻Box的margin会发生重叠
++ 每个元素的margin box的左边， 与包含块border box的左边相接触(对于从左往右的格式化，否则相反
++ BFC的区域不会与float box重叠
++ BFC是一个独立容器，容器里面的子元素不会影响到外面的元素
++ 计算BFC的高度时，浮动元素也参与计算高度
++ 元素的类型和display属性，决定了这个Box的类型。不同类型的Box会参与不同的Formatting Context。
+
+### 创建方式
++ 根元素即HTML元素为BFC
++ float属性的值不为none
++ position属性的值为absolute或fixed
++ display属性的值为inline-block、table-cell、table-caption等
++ overflow的值不为visible
+
+### 使用场景
+- 去除边距重叠现象
+- 清除浮动（让父元素的高度包含子浮动元素）
+- 避免某元素被浮动元素覆盖
+- 避免多列布局由于宽度计算四舍五入而自动换行
+
+## 水平居中
++ 行内元素: text-align: center
++ 确定宽度的元素
+    - margin: 0 auto
+    - 绝对定位和margin-left: (父width - 子width）/2, 前提是父元素position: relative
++ 对于宽度未知的块级元素
+    - table标签配合margin左右auto实现水平居中。使用table标签（或直接将块级元素设值为 display:table），再通过给该标签添加左右margin为auto。
+    - inline-block实现水平居中方法。display：inline-block和text-align:center实现水平居中。
+    - 绝对定位+transform，translateX可以移动本身元素的50%。
+    - flex布局使用justify-content:center
+
