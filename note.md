@@ -219,7 +219,7 @@ box-sizing 规定两个并排的带边框的框，语法为 box-sizing：content
 + border-box：为元素设定的宽度和高度决定了元素的边框盒。【IE 盒子模型】
 + inherit：继承父元素的 box-sizing 值。
 
-CSS 选择器及优先级
+## CSS 选择器及优先级
 ### 选择器
 + id选择器(#myid)
 + 类选择器(.myclass)
