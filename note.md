@@ -181,15 +181,19 @@ https:是以安全为目标的 HTTP 通道，即 HTTP 下 加入 SSL 层进行�
 3. 协商缓存`Last-Modify`/`If-Modify-Since`阶段，客户端第一次请求资源时，服务服返回的header中会加上`Last-Modify`，`Last-modify`是一个时间标识该资源的最后修改时间。再次请求该资源时，request的请求头中会包含`If-Modify-Since`，该值为缓存之前返回的`Last-Modify`。服务器收到`If-Modify-Since`后，根据资源的最后修改时间判断是否命中缓存。
 
 
-## 盒模型
-CSS3 中的盒模型有以下两种：标准盒模型、IE（替代）盒模型。
-两种盒子模型都是由 content + padding + border + margin 构成，其大小都是由 content + padding + border 决定的，但是盒子内容宽/高度（即 width/height）的计算范围根据盒模型的不同会有所不同：
-**标准盒模型**：只包含 content 。
-**IE（替代）盒模型**：content + padding + border 。
+## CSS 盒子模型
+CSS 盒模型本质上是一个盒子，它包括：边距，边框，填充和实际内容。CSS 中的盒子模型包括 IE 盒子模型和标准的 W3C 盒子模型。
+在标准的盒子模型中，width 指 content 部分的宽度。
+在 IE 盒子模型中，width 表示 content+padding+border 这三个部分的宽度。
+故在计算盒子的宽度时存在差异：
++ 标准盒模型： 一个块的总宽度 = width+margin(左右)+padding(左右)+border(左右)
++ 怪异盒模型： 一个块的总宽度 = width+margin（左右）（既 width 已经包含了 padding 和 border 值）
 
-可以通过 box-sizing 来改变元素的盒模型：
-- box-sizing: content-box ：标准盒模型（默认值）。
-- box-sizing: border-box ：IE（替代）盒模型。
+## box-sizing属性
+box-sizing 规定两个并排的带边框的框，语法为 box-sizing：content-box/border-box/inherit
++ content-box：宽度和高度分别应用到元素的内容框，在宽度和高度之外绘制元素的内边距和边框。【标准盒子模型】
++ border-box：为元素设定的宽度和高度决定了元素的边框盒。【IE 盒子模型】
++ inherit：继承父元素的 box-sizing 值。
 
 ## BFC（块级格式上下文）
 ### 概念
