@@ -149,8 +149,6 @@ https:是以安全为目标的 HTTP 通道，即 HTTP 下 加入 SSL 层进行�
 }
 ```
 
-
-
 ## 浏览器的缓存机制 强制缓存 & 协商缓存
 浏览器与服务器通信的方式为应答模式，即是：浏览器发起HTTP请求 – 服务器响应该请求。那么浏览器第一次向服务器发起该请求后拿到请求结果，会根据响应报文中HTTP头的缓存标识，决定是否缓存结果，是则将请求结果和缓存标识存入浏览器缓存中，简单的过程如下图：
 ![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/487144abaada4b9a8b34bc9375191ec7~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp)
@@ -180,7 +178,33 @@ https:是以安全为目标的 HTTP 通道，即 HTTP 下 加入 SSL 层进行�
 2. 强缓存失效，进入协商缓存阶段，首先验证ETag。ETag可以保证每一个资源是唯一的，资源变化都会导致ETag变化。服务器根据客户端上送的`If-None-Match`值来判断是否命中缓存。
 3. 协商缓存`Last-Modify`/`If-Modify-Since`阶段，客户端第一次请求资源时，服务服返回的header中会加上`Last-Modify`，`Last-modify`是一个时间标识该资源的最后修改时间。再次请求该资源时，request的请求头中会包含`If-Modify-Since`，该值为缓存之前返回的`Last-Modify`。服务器收到`If-Modify-Since`后，根据资源的最后修改时间判断是否命中缓存。
 
+# HTML
+## HTML5 新特性、语义化
 
+**概念**：
+HTML5的语义化指的是合理正确的使用语义化的标签来创建页面结构。【正确的标签做正确的事】
+
+**语义化标签**：
+header nav main article section aside footer
+
+
+**语义化的优点**:
++ 在没CSS样式的情况下，页面整体也会呈现很好的结构效果
++ 代码结构清晰，易于阅读，
++ 利于开发和维护 方便其他设备解析（如屏幕阅读器）根据语义渲染网页。
++ 有利于搜索引擎优化（SEO），搜索引擎爬虫会根据不同的标签来赋予不同的权重
+
+## script 标签中 defer 和 async 的区别？
+
++ script ：会阻碍 HTML 解析，只有下载好并执行完脚本才会继续解析 HTML。
++ async script ：解析 HTML 过程中进行脚本的异步下载，下载成功立马执行，有可能会阻断 HTML 的解析。
++ defer script：完全不会阻碍 HTML 的解析，解析完成之后再按照顺序执行脚本。
+
+下图清晰地展示了三种 script 的过程：
+
+![](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8ea091aed8364b88a653a13c4845a824~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp)
+
+# CSS
 ## CSS 盒子模型
 CSS 盒模型本质上是一个盒子，它包括：边距，边框，填充和实际内容。CSS 中的盒子模型包括 IE 盒子模型和标准的 W3C 盒子模型。
 在标准的盒子模型中，width 指 content 部分的宽度。
@@ -194,6 +218,28 @@ box-sizing 规定两个并排的带边框的框，语法为 box-sizing：content
 + content-box：宽度和高度分别应用到元素的内容框，在宽度和高度之外绘制元素的内边距和边框。【标准盒子模型】
 + border-box：为元素设定的宽度和高度决定了元素的边框盒。【IE 盒子模型】
 + inherit：继承父元素的 box-sizing 值。
+
+CSS 选择器及优先级
+### 选择器
++ id选择器(#myid)
++ 类选择器(.myclass)
++ 属性选择器(a[rel="external"])
++ 伪类选择器(a:hover, li:nth-child)
++ 标签选择器(div, h1,p)
++ 相邻选择器（h1 + p）
++ 子选择器(ul > li)
++ 后代选择器(li a)
++ 通配符选择器(*)
+
+优先级：
++ !important
++ 内联样式（1000）
++ ID选择器（0100）
++ 类选择器/属性选择器/伪类选择器（0010）
++ 元素选择器/伪元素选择器（0001）
++ 关系选择器/通配符选择器（0000）
+
+**ps**: 带!important 标记的样式属性优先级最高； 样式表的来源相同时：!important > 行内样式>ID选择器 > 类选择器 > 标签 > 通配符 > 继承 > 浏览器默认属性
 
 ## BFC（块级格式上下文）
 ### 概念
